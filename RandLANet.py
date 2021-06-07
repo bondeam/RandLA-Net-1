@@ -283,17 +283,8 @@ class Network:
         return tf.nn.leaky_relu(f_pc + shortcut)
 
     def building_block(self, xyz, feature, neigh_idx, d_out, name, is_training):
-        d_in = feature.get_shape()[-1].value
-        f_xyz = self.relative_pos_encoding(xyz, neigh_idx)
-        f_xyz = helper_tf_util.conv2d(f_xyz, d_in, [1, 1], name + 'mlp1', [1, 1], 'VALID', True, is_training)
-        f_neighbours = self.gather_neighbour(tf.squeeze(feature, axis=2), neigh_idx)
-        f_concat = tf.concat([f_neighbours, f_xyz], axis=-1)
-        f_pc_agg = self.att_pooling(f_concat, d_out // 2, name + 'att_pooling_1', is_training)
-
-        f_xyz = helper_tf_util.conv2d(f_xyz, d_out // 2, [1, 1], name + 'mlp2', [1, 1], 'VALID', True, is_training)
-        f_neighbours = self.gather_neighbour(tf.squeeze(f_pc_agg, axis=2), neigh_idx)
-        f_concat = tf.concat([f_neighbours, f_xyz], axis=-1)
-        f_pc_agg = self.att_pooling(f_concat, d_out, name + 'att_pooling_2', is_training)
+        f_pc_agg = self.att_pooling(feature, d_out, name + 'att_pooling_1', is_training)
+        f_pc_agg = self.att_pooling(f_pc_agg, d_out, name + 'att_pooling_2', is_training)
         return f_pc_agg
 
     def relative_pos_encoding(self, xyz, neigh_idx):
