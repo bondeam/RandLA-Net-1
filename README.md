@@ -4,7 +4,7 @@ the code RandLA-Net
 [Previous MD](/READIT.md)
 
 
-将AP置换为Max_Pool
+危机合约:AP置换为Max_Pool
 
 
 现在对于原有不变情况下，对tf2也有了支持
