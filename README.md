@@ -5,8 +5,7 @@ the code RandLA-Net
 
 
 
-这个版本删除了LocSE
-现在单个点特征会直接传给AP。。。两次
+危机合约:所有LocSE消失，DRB只剩下两组AP
 
 
 现在对于原有不变情况下，对tf2也有了支持
