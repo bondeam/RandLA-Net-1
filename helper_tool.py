@@ -1,4 +1,4 @@
-from open3d import linux as open3d
+import open3d
 from os.path import join
 import numpy as np
 import colorsys, random, os, sys
@@ -273,17 +273,23 @@ class Plot:
 
     @staticmethod
     def draw_pc(pc_xyzrgb):
-        pc = open3d.PointCloud()
-        pc.points = open3d.Vector3dVector(pc_xyzrgb[:, 0:3])
+        points = open3d.utility.Vector3dVector(pc_xyzrgb[:, 0:3])
+        pc = open3d.geometry.PointCloud(points)
         if pc_xyzrgb.shape[1] == 3:
             open3d.draw_geometries([pc])
-            return 0
         if np.max(pc_xyzrgb[:, 3:6]) > 20:  ## 0-255
-            pc.colors = open3d.Vector3dVector(pc_xyzrgb[:, 3:6] / 255.)
+            pc.colors = open3d.utility.Vector3dVector(pc_xyzrgb[:, 3:6] / 255.)
         else:
-            pc.colors = open3d.Vector3dVector(pc_xyzrgb[:, 3:6])
-        open3d.draw_geometries([pc])
-        return 0
+            pc.colors = open3d.utility.Vector3dVector(pc_xyzrgb[:, 3:6])
+        v = open3d.visualization.Visualizer()
+        v.create_window()
+        v.add_geometry(pc)
+        v.update_geometry(pc)
+        v.poll_events()
+        v.update_renderer()
+        v.capture_screen_image('test.png')
+        v.run()
+        v.destroy_window()
 
     @staticmethod
     def draw_pc_sem_ins(pc_xyz, pc_sem_ins, plot_colors=None):
