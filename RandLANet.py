@@ -344,6 +344,15 @@ class Network:
 
     @staticmethod
     def att_pooling(feature_set, d_out, name, is_training):
-        f_agg = tf.reduce_sum(feature_set, axis=2, keepdims=True)
+        batch_size = tf.shape(feature_set)[0]
+        num_points = tf.shape(feature_set)[1]
+        num_neigh = tf.shape(feature_set)[2]
+        d = feature_set.get_shape()[3].value
+        f_reshaped = tf.reshape(feature_set, shape=[-1, num_neigh, d])
+        att_activation = tf.layers.dense(f_reshaped, d, activation=None, use_bias=False, name=name + 'fc')
+        att_scores = tf.nn.softmax(att_activation, axis=1)
+        f_agg = f_reshaped * att_scores
+        f_agg = tf.reduce_sum(f_agg, axis=1)
+        f_agg = tf.reshape(f_agg, [batch_size, num_points, 1, d])
         f_agg = helper_tf_util.conv2d(f_agg, d_out, [1, 1], name + 'mlp', [1, 1], 'VALID', True, is_training)
         return f_agg
