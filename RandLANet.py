@@ -349,6 +349,10 @@ class Network:
 
     @staticmethod
     def att_pooling(feature_set, d_out, name, is_training):
-        f_agg = tf.reduce_mean(feature_set, axis=2, keepdims=True)
-        f_agg = helper_tf_util.conv2d(f_agg, d_out, [1, 1], name + 'mlp', [1, 1], 'VALID', True, is_training)
-        return f_agg
+        # feature_set: [batch_size, num_points, num_neighbors, d_in])
+        # return [batch_size, num_points, 1, d_out]
+        x = feature_set
+        x = tf.reshape(feature_set, [tf.shape(x)[0], tf.shape(x)[1], -1, d_out])
+        x = tf.reduce_mean(feature_set, axis=2, keepdims=True)
+        # x = tf.reshape(x, [batch_size, num_points, 1, d_out])
+        return x
