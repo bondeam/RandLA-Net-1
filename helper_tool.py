@@ -1,4 +1,4 @@
-from open3d import linux as open3d
+import open3d
 from os.path import join
 import numpy as np
 import colorsys, random, os, sys
@@ -56,7 +56,7 @@ class ConfigS3DIS:
     d_out = [16, 64, 128, 256, 512]  # feature dimension
 
     noise_init = 3.5  # noise initial parameter
-    max_epoch = 100  # maximum epoch during training
+    max_epoch = 1  # maximum epoch during training
     learning_rate = 1e-2  # initial learning rate
     lr_decays = {i: 0.95 for i in range(0, 500)}  # decay rate of learning rate
 

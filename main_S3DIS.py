@@ -5,7 +5,8 @@ from helper_ply import read_ply
 from helper_tool import ConfigS3DIS as cfg
 from helper_tool import DataProcessing as DP
 from helper_tool import Plot
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np
 import time, pickle, argparse, glob, os
 
@@ -13,7 +14,7 @@ import time, pickle, argparse, glob, os
 class S3DIS:
     def __init__(self, test_area_idx):
         self.name = 'S3DIS'
-        self.path = '/data/S3DIS'
+        self.path = '/content/data/S3DIS'
         self.label_to_names = {0: 'ceiling',
                                1: 'floor',
                                2: 'wall',
@@ -176,10 +177,10 @@ class S3DIS:
             input_up_samples = []
 
             for i in range(cfg.num_layers):
-                neighbour_idx = tf.py_func(DP.knn_search, [batch_xyz, batch_xyz, cfg.k_n], tf.int32)
+                neighbour_idx = tf.numpy_function(DP.knn_search, [batch_xyz, batch_xyz, cfg.k_n], tf.int32)
                 sub_points = batch_xyz[:, :tf.shape(batch_xyz)[1] // cfg.sub_sampling_ratio[i], :]
                 pool_i = neighbour_idx[:, :tf.shape(batch_xyz)[1] // cfg.sub_sampling_ratio[i], :]
-                up_i = tf.py_func(DP.knn_search, [sub_points, batch_xyz, 1], tf.int32)
+                up_i = tf.numpy_function(DP.knn_search, [sub_points, batch_xyz, 1], tf.int32)
                 input_points.append(batch_xyz)
                 input_neighbors.append(neighbour_idx)
                 input_pools.append(pool_i)
